@@ -1,4 +1,5 @@
 import 'package:chuva/app/core/widgets/app_bar_custom.dart';
+import 'package:chuva/app/features/activities/widgets/calendar_widget.dart';
 import 'package:flutter/material.dart';
 
 class ActivitePage extends StatelessWidget {
@@ -7,10 +8,17 @@ class ActivitePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarCustom(
-        actions: [],
-      ),
-      body: Container(),
-    );
+        appBar: const AppBarCustom(
+          actions: [],
+        ),
+        body: Column(
+          children: [
+            CalendarWidget(
+              onDaySelected: (daySelected) {
+                print(daySelected);
+              },
+            ),
+          ],
+        ));
   }
 }

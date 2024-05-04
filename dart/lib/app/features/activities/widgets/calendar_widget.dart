@@ -1,3 +1,4 @@
+import 'package:chuva/app/features/activities/store/day_selected_store.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -10,15 +11,12 @@ class CalendarWidget extends StatefulWidget {
 }
 
 class _CalendarWidgetState extends State<CalendarWidget> {
-  // Get the current month and year
+  final DaySelectedStore daySelectedStore = DaySelectedStore();
   String monthName = DateFormat.MMMM().format(DateTime.now());
   String yearNow = DateFormat.y().format(DateTime.now());
-  
-
   late final DateTime currentDate;
   late final DateTime firstDayOfMonth;
   late final DateTime firstDayOfNextMonth;
-  int daySelected = DateTime.now().day;
   List<DateTime> daysInMonth = [];
   generateDayInTheMotn() {
     for (DateTime day = firstDayOfMonth;
@@ -58,35 +56,39 @@ class _CalendarWidgetState extends State<CalendarWidget> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: daysInMonth.length,
-              itemBuilder: (_, index) {
-                final dayInList = daysInMonth[index].day;
-                return GestureDetector(
-                  onTap: () {
-                    widget.onDaySelected(dayInList);
-                    setState(() {
-                      daySelected = dayInList;
-                    });
-                  },
-                  child: Container(
-                    width: 32,
-                    decoration: const BoxDecoration(color: Colors.blue),
-                    child: Center(
-                      child: Text(
-                        dayInList.toString(),
-                        style: TextStyle(
-                            color: dayInList == daySelected
-                                ? Colors.white
-                                : Colors.grey),
+          ListenableBuilder(
+            listenable: daySelectedStore.changeNotifier,
+            builder: (context, _) {
+              return Expanded(
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: daysInMonth.length,
+                  itemBuilder: (_, index) {
+                    final dayInList = daysInMonth[index].day;
+                    return GestureDetector(
+                      onTap: () {
+                        widget.onDaySelected(dayInList);
+
+                        daySelectedStore.setDay(dayInList);
+                      },
+                      child: Container(
+                        width: 32,
+                        decoration: const BoxDecoration(color: Colors.blue),
+                        child: Center(
+                          child: Text(
+                            dayInList.toString(),
+                            style: TextStyle(
+                                color: daySelectedStore.state == dayInList
+                                    ? Colors.white
+                                    : Colors.grey),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),

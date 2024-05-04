@@ -1,5 +1,6 @@
 import 'package:chuva/app/core/widgets/app_bar_custom.dart';
 import 'package:chuva/app/features/activities/controller/activities_controller.dart';
+import 'package:chuva/app/features/activities/states/activites_page_state.dart';
 import 'package:chuva/app/features/activities/widgets/calendar_widget.dart';
 import 'package:chuva/app/features/activities/widgets/card_activite.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +16,10 @@ class ActivitePage extends StatefulWidget {
 class _ActivitePageState extends State<ActivitePage> {
   @override
   void initState() {
-    /*  widget.controller.getAllActivities(); */
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.controller.getAllActivities().then((value) =>
+          widget.controller.filtiringActivitesByDay(DateTime.now().day));
+    });
     super.initState();
   }
 
@@ -25,44 +29,52 @@ class _ActivitePageState extends State<ActivitePage> {
         appBar: const AppBarCustom(
           actions: [],
         ),
-        body: Column(
-          children: [
-            CalendarWidget(
-              onDaySelected: (_) {},
+        body: SafeArea(
+          child: ListenableBuilder(
+            listenable: widget.controller.pageStore.changeNotifier,
+            child: CalendarWidget(
+              onDaySelected: widget.controller.filtiringActivitesByDay,
             ),
-            /* ListenableBuilder(
-              listenable: widget.controller.store.changeNotifier,
-              builder: (context, child) {
-                return Expanded(
-                  child: ListView.builder(
-                    itemCount: widget.controller.store.state.length,
-                    itemBuilder: (_, index) {
-                      final activie = widget.controller.store.state[index];
-                      return CardActivite(
-                        title: activie.title,
-                        backGroundColor:
-                            activie.activiteCategory.backGroundColor,
-                        colorType: activie.activiteCategory.color,
-                        subTitle: activie.activiteCategory.title,
-                      );
-                    },
+            builder: (_, child) {
+              return switch (widget.controller.pageStore.state) {
+                ActivitesPageInitialState() => const SizedBox.shrink(),
+                ActivitesPageLoadingState() => const Center(
+                    child: CircularProgressIndicator(),
                   ),
-                );
-              },
-            ) */
-            Expanded(
-              child: ListView(
-                children: const [
-                  CardActivite(
-                    title: "A Física dos Buracos Negros\nSupermassivos",
-                    subTitle: "Stephen William Hawking",
-                    colorType: Colors.orange,
-                    backGroundColor: Colors.white60,
+                ActivitesPageEmptyState() => Column(
+                    children: [
+                      child!,
+                      const Text("Nenhuma atividade encontrada")
+                    ],
                   ),
-                ],
-              ),
-            )
-          ],
+                ActivitesPageLoadedState(activities: final activities) =>
+                  Column(
+                    children: [
+                      child!,
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: activities.length,
+                          itemBuilder: (context, index) {
+                            final activite = activities[index];
+                            return CardActivite(
+                              type: activite.type,
+                              title: activite.title,
+                              backGroundColor:
+                                  activite.activiteCategory.backGroundColor,
+                              colorType: activite.activiteCategory.color,
+                              subTitle: activite.activiteCategory.title,
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ActivitesPageErrorState(:final message) => Center(
+                    child: Text(message),
+                  ),
+              };
+            },
+          ),
         ));
   }
 }

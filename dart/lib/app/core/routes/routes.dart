@@ -2,6 +2,7 @@ import 'package:chuva/app/core/restClient/rest_client.dart';
 import 'package:chuva/app/features/activities/controller/activities_controller.dart';
 import 'package:chuva/app/features/activities/pages/activite_page.dart';
 import 'package:chuva/app/features/activities/repository/activities_repository_impl.dart';
+import 'package:chuva/app/features/activities/store/activites_page_store.dart';
 import 'package:chuva/app/features/activities/store/activities_store.dart';
 import 'package:chuva/app/pages/splash_page.dart';
 import 'package:go_router/go_router.dart';
@@ -23,8 +24,8 @@ sealed class Routes {
           path: activitiesRoute,
           builder: (_, __) {
             return ActivitePage(
-              controller: ActivitiesController(
-                  ActivitiesStore(ActivitiesRepositoryImpl(RestClient()))),
+              controller: ActivitiesController(ActivitiesStore(),
+                  ActivitePageStore(), ActivitiesRepositoryImpl(RestClient())),
             );
           }),
     ],

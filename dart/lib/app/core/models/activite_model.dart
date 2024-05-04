@@ -1,8 +1,6 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
-import 'package:chuva/app/core/extensions/css_from_color.extension.dart';
-import 'package:flutter/material.dart';
+import 'package:chuva/app/core/models/activite_category_model.dart';
 
 class ActiviteModel {
   final int id;
@@ -10,16 +8,16 @@ class ActiviteModel {
   final String start;
   final String end;
   final String title;
-  final Color color;
-  final Color backGroundColor;
+  final ActiviteCategoryModel activiteCategory;
+  final String type;
   ActiviteModel({
     required this.id,
     required this.changed,
     required this.start,
     required this.end,
     required this.title,
-    required this.color,
-    required this.backGroundColor,
+    required this.type,
+    required this.activiteCategory,
   });
 
   factory ActiviteModel.fromMap(Map map) {
@@ -29,18 +27,18 @@ class ActiviteModel {
         "changed": final int changed,
         "start": final String start,
         "end": final String end,
-        "title": final String title,
-        "color": final String color,
-        "background-color": final String backGroundColor,
+        "title": final Map title,
+        "type": final Map type,
+        "category": final Map category,
       } =>
         ActiviteModel(
             id: id,
             changed: changed,
             start: start,
             end: end,
-            title: title,
-            color: color.cssFromColor(),
-            backGroundColor: backGroundColor.cssFromColor()),
+            title: title["pt-br"],
+            type: type["title"]["pt-br"],
+            activiteCategory: ActiviteCategoryModel.fromMap(category)),
       _ => throw ArgumentError('Erro ao formatar o json para ActiviteModel')
     };
   }
@@ -51,8 +49,8 @@ class ActiviteModel {
     String? start,
     String? end,
     String? title,
-    Color? color,
-    Color? backGroundColor,
+    String? type,
+    ActiviteCategoryModel? activiteCategory,
   }) {
     return ActiviteModel(
       id: id ?? this.id,
@@ -60,32 +58,13 @@ class ActiviteModel {
       start: start ?? this.start,
       end: end ?? this.end,
       title: title ?? this.title,
-      color: color ?? this.color,
-      backGroundColor: backGroundColor ?? this.backGroundColor,
+      type: type ?? this.type,
+      activiteCategory: activiteCategory ?? this.activiteCategory,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return <String, dynamic>{
-      'id': id,
-      'changed': changed,
-      'start': start,
-      'end': end,
-      'title': title,
-      'color': color.value,
-      'backGroundColor': backGroundColor.value,
-    };
-  }
-
-  String toJson() => json.encode(toMap());
-
   factory ActiviteModel.fromJson(String source) =>
       ActiviteModel.fromMap(json.decode(source) as Map<String, dynamic>);
-
-  @override
-  String toString() {
-    return 'ActiviteModel(id: $id, changed: $changed, start: $start, end: $end, title: $title, color: $color, backGroundColor: $backGroundColor)';
-  }
 
   @override
   bool operator ==(covariant ActiviteModel other) {
@@ -96,8 +75,7 @@ class ActiviteModel {
         other.start == start &&
         other.end == end &&
         other.title == title &&
-        other.color == color &&
-        other.backGroundColor == backGroundColor;
+        other.activiteCategory == activiteCategory;
   }
 
   @override
@@ -107,7 +85,6 @@ class ActiviteModel {
         start.hashCode ^
         end.hashCode ^
         title.hashCode ^
-        color.hashCode ^
-        backGroundColor.hashCode;
+        activiteCategory.hashCode;
   }
 }

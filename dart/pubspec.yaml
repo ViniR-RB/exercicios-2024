@@ -40,6 +40,8 @@ dependencies:
   from_css_color: ^2.0.0
   intl: ^0.18.1
   flutter_localization: ^0.2.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

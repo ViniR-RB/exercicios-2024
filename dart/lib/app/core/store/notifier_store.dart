@@ -9,6 +9,8 @@ abstract class StoreNotifier<T> implements StoreAbstract<T> {
   @override
   T get state => _state;
 
+  ChangeNotifier get changeNotifier => _changeNotifier;
+
   @override
   void dispatch(T state) {
     _state = state;

@@ -1,7 +1,7 @@
 import 'package:chuva/app/core/routes/routes.dart';
 import 'package:chuva/app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_localization/flutter_localization.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class AppWidget extends StatelessWidget {
   const AppWidget({super.key});
@@ -13,8 +13,11 @@ class AppWidget extends StatelessWidget {
       theme: AppTheme.theme,
       routerConfig: Routes.router,
       locale: const Locale('pt', 'BR'),
-      localizationsDelegates:
-          FlutterLocalization.instance.localizationsDelegates,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       supportedLocales: const [
         Locale('pt', 'BR'),
       ],
